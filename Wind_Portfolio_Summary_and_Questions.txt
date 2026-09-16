@@ -1,0 +1,89 @@
+=================================================================================================================
+                            WIND PORTFOLIO PERFORMANCE OPTIMIZATION
+                         EXECUTIVE SUMMARY & QUESTION FRAMEWORK CHARTER
+=================================================================================================================
+
+1. BUSINESS PROBLEM
+-----------------------------------------------------------------------------------------------------------------
+Across our 1 GW synthetic wind asset portfolio, power generation suffers from an estimated 5%–8% annual 
+generation gap relative to optimal potential. Operational telemetry reveals that during approximately 14% of 
+turbine-operating hours, turbines generate at least 10% less power than expected under comparable wind and 
+weather conditions. This ongoing shortfall leaves tens of millions of kilowatt-hours and significant potential 
+energy revenue uncaptured due to unidentified technical, aerodynamic, and control-setting defects.
+
+
+2. STRATEGIC OBJECTIVES
+-----------------------------------------------------------------------------------------------------------------
+* Business & Financial Objective: Identify, explain, and prioritize controllable technical losses across the 
+  fleet to recover 2%–3% of lost Annual Energy Production (AEP). For a 1 GW portfolio operating at a 38% capacity 
+  factor (~3.33 TWh/year baseline), this represents an annual recovery of 66.6 to 99.9 GWh/year.
+
+* Analytics Objective: Construct a high-precision digital power baseline model that predicts expected turbine 
+  power output with an accuracy target of R² >= 0.90, while isolating external grid curtailment and downtime from 
+  addressable technical losses.
+
+
+3. TARGET VARIABLE DEFINITIONS
+-----------------------------------------------------------------------------------------------------------------
+* Primary Target (Regression): Expected_Power_kW
+  A continuous output metric representing the exact active power (in kW) a turbine should generate given real-time 
+  meteorological conditions (wind speed, wind direction, ambient temperature, pressure, and air density).
+
+* Secondary Target (Classification): Underperformance_Flag
+  A binary indicator (1 or 0) triggered whenever a turbine experiences a controllable power loss under active, 
+  non-curtailed operating conditions:
+  
+  Underperformance_Flag = 1 IF:
+    (Expected_Power_kW - Actual_Power_kW) / Expected_Power_kW > 0.10
+    AND Turbine_Available == True
+    AND Grid_Curtailment_Flag == False
+    AND Wind_Speed >= Cut_In_Wind_Speed (e.g., 3.0 m/s)
+  ELSE 0
+
+
+4. BUSINESS QUESTIONS FRAMEWORK (5x5 FRAMEWORK)
+-----------------------------------------------------------------------------------------------------------------
+
+A. DESCRIPTIVE QUESTIONS (What happened?)
+-----------------------------------------------------------------------------------------------------------------
+1. What is the current capacity factor and total energy yield across all turbines in the portfolio over the last 12 months?
+2. What percentage of total operational hours fall into the >10% power loss category?
+3. How is lost generation distributed across different wind farms, sub-regions, and turbine models?
+4. What are the baseline environmental conditions (average wind speed, direction, temperature) during peak underperformance periods?
+5. How often do planned maintenance outages overlap with high-wind resource windows?
+
+B. DIAGNOSTIC QUESTIONS (Why did it happen?)
+-----------------------------------------------------------------------------------------------------------------
+1. Which specific component anomalies (e.g., yaw misalignment, pitch system drift, gearbox over-temperature) correlate most strongly with the >10% generation gap?
+2. How much underperformance is caused by controllable technical losses versus uncontrollable weather variations or grid curtailment?
+3. Are specific turbine models or serial numbers suffering from systematic software or control-setting degradation?
+4. Does wake interference from upstream turbines account for unexplained localized power drops in specific wind directions?
+5. How much generation is lost to curtailment events enforced by the transmission system operator versus internal safety shutdowns?
+
+C. PREDICTIVE QUESTIONS (What will happen?)
+-----------------------------------------------------------------------------------------------------------------
+1. What is the forecasted power generation (Expected_Power_kW) for the portfolio over the next 1-hour, 6-hour, and 24-hour horizons?
+2. Which turbines are most likely to experience a >10% power deficit in the upcoming 7 days based on real-time SCADA trends?
+3. Can early temperature and vibration signatures predict gearbox or main-bearing degradation before a mechanical failure occurs?
+4. How much total energy loss (MWh) do we project for the portfolio over the next quarter if current underperformance trends remain unaddressed?
+5. Which environmental conditions are most likely to trigger curtailment or derating over the next 48 hours?
+
+D. PRESCRIPTIVE QUESTIONS (How can we make it happen?)
+-----------------------------------------------------------------------------------------------------------------
+1. Which specific turbines should be prioritized for immediate field maintenance to maximize recovered MWh and financial return?
+2. What optimal pitch and yaw control adjustments will eliminate recurring aerodynamics-driven underperformance?
+3. When should maintenance schedules be set to minimize revenue loss during low-wind periods?
+4. How should technical resources be allocated between software/control recalibration versus physical component repairs to hit the 2–3% recovery target?
+5. What automated operational threshold should trigger an inspection alert before a derated turbine causes a critical energy deficit?
+
+E. COGNITIVE QUESTIONS (How can the system adapt and learn?)
+-----------------------------------------------------------------------------------------------------------------
+1. How can the system continuously refine its baseline power-curve models as turbines age and components wear over time?
+2. Can the model autonomously distinguish between temporary environmental anomalies (e.g., blade icing or bug fouling) and long-term mechanical degradation?
+3. How can real-time operator overrides and feedback from field technician repairs be integrated to improve fault classification accuracy?
+4. How can the model balance short-term revenue optimization against long-term turbine health to recommend real-time derating strategies?
+5. How can the framework translate complex SCADA multi-sensor anomalies into natural-language action plans for field engineering teams?
+
+=================================================================================================================
+                                                 END OF FILE
+=================================================================================================================
