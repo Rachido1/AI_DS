@@ -1,0 +1,417 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Industrial Wind SCADA Dataset Demo</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#061525;color:#eef8ff;font-family:Segoe UI,Arial,sans-serif}.top{padding:16px 22px;border-bottom:1px solid #28465f;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}.top h1{margin:0;font-size:24px}.sub{color:#9fc5dd;font-size:13px;margin-top:5px}.langs button,.btn{background:#0b2942;color:#fff;border:1px solid #2c668b;border-radius:9px;padding:9px 13px;cursor:pointer}.langs button.on,.btn.primary{background:#0575a8;border-color:#38bdf8}.btn.danger{background:#7c1831;border-color:#fb7185}
+.btn.step-active{background:#b45309!important;border-color:#fbbf24!important;box-shadow:0 0 0 2px rgba(251,191,36,.18)}
+.btn.step-done{background:#065f46!important;border-color:#34d399!important;color:#ecfdf5}
+.btn.step-next{background:#075985!important;border-color:#38bdf8!important;box-shadow:0 0 0 2px rgba(56,189,248,.14)}
+.btn:disabled{background:#13283a!important;border-color:#28445d!important;color:#71869a!important;opacity:.6!important;cursor:not-allowed!important}
+.wo-card-live{border-color:#34d399!important;box-shadow:0 0 0 2px rgba(52,211,153,.12)}
+.wo-banner{display:none;margin-bottom:12px;padding:11px;border-radius:9px;background:#063b32;border:1px solid #34d399;color:#d1fae5;font-weight:700}.wo-banner.show{display:block}.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:14px;padding:18px;max-width:1500px;margin:auto}.card{background:#0a1d30;border:1px solid #284a66;border-radius:16px;padding:16px}.c12{grid-column:span 12}.c8{grid-column:span 8}.c7{grid-column:span 7}.c5{grid-column:span 5}.c4{grid-column:span 4}h2{font-size:18px;margin:0 0 12px}h3{font-size:14px;margin:16px 0 8px}.call{border-left:4px solid #38bdf8;background:#0b2a43;padding:12px;border-radius:8px;color:#d9efff}.flow{display:flex;gap:7px;align-items:center;flex-wrap:wrap;margin-top:12px}.node{border:1px solid #315a79;background:#0b253b;padding:8px 10px;border-radius:9px}.arr{color:#38bdf8}.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}.kpi{border:1px solid #284a66;border-radius:12px;padding:12px}.v{font-size:25px;font-weight:800}.l,.small{font-size:12px;color:#9fb8cb}.controls{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}canvas{width:100%;height:280px;background:#06111f;border:1px solid #284a66;border-radius:12px}.status{font-size:28px;font-weight:900;margin:8px 0}.ok{color:#34d399}.warn{color:#f59e0b}.bad{color:#fb7185}table{width:100%;border-collapse:collapse;font-size:12px}th,td{padding:9px;border-bottom:1px solid #28445d;text-align:left}.fields{display:grid;grid-template-columns:1fr 1fr;gap:8px}.field{border:1px solid #284a66;border-radius:10px;padding:10px;font-size:12px}.field b{display:block;color:#9fc5dd;margin-bottom:4px}.modal{position:fixed;inset:0;background:#0009;display:none;align-items:center;justify-content:center;padding:20px;z-index:20}.modal.show{display:flex}.modalbox{max-width:950px;width:100%;max-height:90vh;overflow:auto;background:#0a1d30;border:1px solid #3a6788;border-radius:16px;padding:18px}.cols{display:grid;grid-template-columns:1fr 1fr;gap:12px}.box{border:1px solid #284a66;border-radius:10px;padding:12px}.badge{font-size:11px;border:1px solid #2c668b;border-radius:20px;padding:7px 10px;color:#bdeaff}@media(max-width:900px){.c8,.c7,.c5,.c4{grid-column:span 12}.kpis,.fields,.cols{grid-template-columns:1fr 1fr}}
+
+.analytics-pipeline{margin-top:14px;padding:14px;border:1px solid #315a79;border-radius:12px;background:#071a2a}.analytics-pipeline h3{margin:0 0 10px}.pipe-row{display:flex;align-items:stretch;gap:7px;flex-wrap:wrap}.pipe-step{flex:1;min-width:120px;padding:10px;border:1px solid #315a79;border-radius:9px;background:#0b253b;transition:.25s}.pipe-step .num{font-size:11px;color:#8fb2cb}.pipe-step .name{font-weight:700;margin:3px 0}.pipe-step .out{font-size:12px;color:#b9cada}.pipe-step.active{border-color:#fbbf24;background:#51350a;box-shadow:0 0 0 2px rgba(251,191,36,.14)}.pipe-step.done{border-color:#34d399;background:#063b32}.pipe-arrow{align-self:center;color:#38bdf8;font-weight:700}.model-note{margin-top:9px;font-size:12px;color:#9fb5c8}
+
+.helpq{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;
+ border:1px solid #38bdf8;color:#7dd3fc;background:#082238;font-weight:800;font-size:12px;cursor:pointer;margin-left:5px}
+.helpq:hover{background:#075985;color:white}
+.eventclock{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:12px 0}
+.clockbox{border:1px solid #315a79;border-radius:9px;padding:8px;background:#081c2e}
+.clockbox .cl{font-size:10px;color:#8fb2cb;text-transform:uppercase}.clockbox .cv{font-size:16px;font-weight:800;margin-top:3px}
+.metricbar{display:flex;gap:10px;flex-wrap:wrap;margin:8px 0 12px}.metricpill{padding:7px 10px;border:1px solid #315a79;border-radius:999px;background:#071a2a;font-size:12px}
+.abt-mini{width:100%;border-collapse:collapse;margin-top:10px}.abt-mini th,.abt-mini td{border-bottom:1px solid #294760;padding:7px;text-align:left;font-size:12px;vertical-align:top}
+.mathbox{font-family:Consolas,monospace;background:#061522;border:1px solid #315a79;padding:10px;border-radius:8px;margin:9px 0;white-space:pre-wrap}
+.tag{display:inline-block;padding:3px 7px;border-radius:999px;border:1px solid #315a79;margin:2px;font-size:11px}
+
+</style></head><body>
+<div class="top">
+ <div><h1 id="title"></h1><div class="sub" id="subtitle"></div></div>
+ <div class="langs"><button id="en" onclick="setLang('en')" class="on">EN</button><button id="es" onclick="setLang('es')">ES</button><button id="pt" onclick="setLang('pt')">PT</button></div>
+</div>
+<div class="grid">
+ <div class="card c12">
+  <div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap">
+   <div><h2 id="storyTitle"></h2><div class="call" id="storyText"></div></div>
+   <div class="badge">ACWA DATASET-ANCHORED · GUIDED LIVE STORY</div>
+  </div>
+  <div class="flow" id="flow">
+   <span class="node" data-step="1">1 · SCADA</span><span class="arr">→</span>
+   <span class="node" data-step="2">2 · UNDERPERFORMANCE</span><span class="arr">→</span>
+   <span class="node" data-step="3">3 · ANALYTICS</span><span class="arr">→</span>
+   <span class="node" data-step="4">4 · EAM / CMMS</span><span class="arr">→</span>
+   <span class="node" data-step="5">5 · INTERVENTION</span><span class="arr">→</span>
+   <span class="node" data-step="6">6 · VERIFY</span>
+  </div>
+ </div>
+
+ <div class="card c8">
+  <h2 id="assetTitle"></h2><div class="small" id="identity"></div>
+  <div class="kpis" style="margin-top:12px">
+   <div class="kpi"><div class="v" id="wind"></div><div class="l">Wind speed · m/s</div></div>
+   <div class="kpi"><div class="v" id="expected"></div><div class="l">Expected power · kW</div></div>
+   <div class="kpi"><div class="v" id="actual"></div><div class="l">Actual power · kW</div></div>
+   <div class="kpi"><div class="v" id="deviation"></div><div class="l">Deviation · Actual vs Expected</div></div>
+  </div>
+  <div class="kpis" style="margin-top:9px">
+   <div class="kpi"><div class="v" id="yaw"></div><div class="l">Yaw error · deg</div></div>
+   <div class="kpi"><div class="v" id="vibration"></div><div class="l">Drivetrain vibration · mm/s</div></div>
+   <div class="kpi"><div class="v" id="gearbox"></div><div class="l">Gearbox oil temp · °C</div></div>
+   <div class="kpi"><div class="v" id="availability"></div><div class="l">Availability · %</div></div>
+  </div>
+
+  <div class="small" id="clickGuide" style="margin-top:12px;color:#bdeaff"><b>LIVE DEMO:</b> Click left to right. <span style="color:#7dd3fc">Blue = next</span> · <span style="color:#fcd34d">Amber = current</span> · <span style="color:#6ee7b7">Green = completed</span>.</div>
+  <div class="controls">
+   <button class="btn primary" id="bStart" onclick="startScada()"></button>
+   <button class="btn danger" id="bFault" onclick="introduceFault()"></button>
+   <button class="btn" id="bAnalytics" onclick="runAnalytics()"></button>
+   <button class="btn" id="bWO" onclick="createWO()"></button>
+   <button class="btn" id="bRepair" onclick="intervene()"></button>
+   <button class="btn" id="bReset" onclick="resetDemo()"></button>
+  </div>
+
+  <div class="analytics-pipeline" id="analyticsPipeline"><h3 id="pipelineTitle">What happens behind “Run Analytics”?</h3><div class="pipe-row"><div class="pipe-step" id="pABT"><div class="num">01</div><div class="name">ABT <button class="helpq" onclick="showHelp('abt')">?</button></div><div class="out" id="pABTOut">Turbine × 10-min SCADA observation</div></div><div class="pipe-arrow">→</div><div class="pipe-step" id="pReg"><div class="num">02</div><div class="name">Regression <button class="helpq" onclick="showHelp('reg')">?</button></div><div class="out" id="pRegOut">XGBoost / LightGBM → Expected Power</div></div><div class="pipe-arrow">→</div><div class="pipe-step" id="pResidual"><div class="num">03</div><div class="name">Residual <button class="helpq" onclick="showHelp('res')">?</button></div><div class="out" id="pResidualOut">Actual − Expected</div></div><div class="pipe-arrow">→</div><div class="pipe-step" id="pRule"><div class="num">04</div><div class="name">Eligibility Rule <button class="helpq" onclick="showHelp('rule')">?</button></div><div class="out" id="pRuleOut">&gt;10% gap + available + not curtailed</div></div><div class="pipe-arrow">→</div><div class="pipe-step" id="pDiag"><div class="num">05</div><div class="name">Diagnostic Evidence <button class="helpq" onclick="showHelp('diag')">?</button></div><div class="out" id="pDiagOut">SHAP-style evidence view*</div></div><div class="pipe-arrow">→</div><div class="pipe-step" id="pAction"><div class="num">06</div><div class="name">Action <button class="helpq" onclick="showHelp('action')">?</button></div><div class="out" id="pActionOut">EAM / CMMS recommendation</div></div></div><div class="model-note" id="modelNote">* Teaching simulation: the project deck proposes XGBoost/LightGBM regression, SHAP attribution and unsupervised anomaly detection. This browser demo visualizes pipeline outputs; it does not train those models live.</div></div>
+  
+  <div class="eventclock">
+   <div class="clockbox"><div class="cl" id="clStart">SCADA start</div><div class="cv" id="clockStart">00:00</div></div>
+   <div class="clockbox"><div class="cl" id="clDev">Deviation begins</div><div class="cv" id="clockDev">—</div></div>
+   <div class="clockbox"><div class="cl" id="clAnalytics">Analytics</div><div class="cv" id="clockAnalytics">—</div></div>
+   <div class="clockbox"><div class="cl" id="clIntervention">Intervention</div><div class="cv" id="clockIntervention">—</div></div>
+   <div class="clockbox"><div class="cl" id="clRecovery">Recovery verified</div><div class="cv" id="clockRecovery">—</div></div>
+  </div>
+  <div class="metricbar">
+   <div class="metricpill"><b id="devMetricLabel">Current deviation:</b> <span id="devMetric">0.0%</span></div>
+   <div class="metricpill"><b id="sinceMetricLabel">Time since deviation:</b> <span id="sinceMetric">—</span></div>
+   <div class="metricpill"><b id="clockExplain">Demo clock:</b> accelerated classroom seconds ≠ production 10-minute SCADA interval</div>
+  </div>
+  <canvas id="chart" width="1000" height="330"></canvas>
+  <div class="small" id="chartNote"></div>
+ </div>
+
+ <div class="card c4">
+  <h2 id="decisionTitle"></h2>
+  <div id="status" class="status ok">READY</div><div class="small" id="statusText"></div>
+  <h3 id="gateTitle"></h3>
+  <table>
+   <tr><th>Curtailment</th><td id="curtailment">0</td></tr>
+   <tr><th>Availability</th><td id="gateAvail"></td></tr>
+   <tr><th id="qualityLabel"></th><td id="quality"></td></tr>
+   <tr><th id="eligibleLabel"></th><td id="eligible"></td></tr>
+  </table>
+  <h3 id="diagTitle"></h3><div class="small" id="diagnosis"></div>
+ </div>
+
+ <div class="card c7">
+  <h2 id="evidenceTitle"></h2>
+  <div class="call" id="evidenceSummary"></div>
+  <table style="margin-top:12px">
+   <tr><th id="hypothesisHead"></th><th id="evidenceHead"></th><th id="assessmentHead"></th></tr>
+   <tr><td>Yaw / control alignment</td><td id="yawEvidence"></td><td id="yawAssessment"></td></tr>
+   <tr><td>Drivetrain condition</td><td id="vibEvidence"></td><td id="vibAssessment"></td></tr>
+   <tr><td>Gearbox overheating</td><td id="tempEvidence"></td><td id="tempAssessment"></td></tr>
+   <tr><td>External constraint</td><td id="extEvidence"></td><td id="extAssessment"></td></tr>
+  </table>
+  <div class="controls"><button class="btn primary" id="bExplain" onclick="explainEvidence()"></button></div>
+ </div>
+
+ <div class="card c5" id="eamCard">
+  <h2>EAM / CMMS · <span id="eamTitle"></span></h2>
+  <div class="wo-banner" id="woBanner">✓ WORK ORDER CREATED</div>
+  <div class="fields">
+   <div class="field"><b id="woAssetLabel"></b><span id="woAsset"></span></div>
+   <div class="field"><b id="woNumberLabel"></b><span id="woNumber">—</span></div>
+   <div class="field"><b id="woPriorityLabel"></b><span id="woPriority">—</span></div>
+   <div class="field"><b id="woStatusLabel"></b><span id="woStatus">—</span></div>
+   <div class="field" style="grid-column:span 2"><b id="woScopeLabel"></b><span id="woScope">—</span></div>
+  </div>
+  <div class="small" id="woNote" style="margin-top:10px"></div>
+  <div id="woDetail" style="display:none;margin-top:12px">
+   <h3 id="woDetailTitle">Work Order Detail</h3>
+   <table>
+    <tr><th id="woSourceLabel">Source event</th><td id="woSource">—</td></tr>
+    <tr><th id="woTriggerLabel">Trigger</th><td id="woTrigger">—</td></tr>
+    <tr><th id="woAssignedLabel">Assigned to</th><td id="woAssigned">—</td></tr>
+    <tr><th id="woDueLabel">Due / SLA</th><td id="woDue">—</td></tr>
+    <tr><th id="woActionLabel">Required action</th><td id="woAction">—</td></tr>
+   </table>
+  </div>
+ </div>
+
+ <div class="card c12">
+  <h2 id="teachingTitle"></h2>
+  <div class="call" id="teachingText"></div>
+ </div>
+</div>
+
+<div class="modal" id="modal"><div class="modalbox">
+ <div style="display:flex;justify-content:space-between;gap:10px"><div><h2 id="mTitle"></h2><div class="small" id="mSub"></div></div><button class="btn" onclick="$('modal').classList.remove('show')">×</button></div>
+ <div id="mBody"></div>
+</div></div>
+
+<script>
+const DATA=[{"Record_ID": "WND-000403475", "Farm_ID": "WF-013", "Region": "Central", "Site_Zone": "E", "Turbine_ID": "WTG-00818", "Turbine_Model": "6MW-B", "Sensor_ID": "SEN-0191719", "Timestamp": "2032-09-02 21:50", "Wind_Speed_m_s": 12.8762, "Wind_Direction_deg": 93.1237, "Turbulence_Intensity": 0.1905, "Air_Temperature_C": 29.7329, "Air_Density_kg_m3": 1.3, "Actual_Power_kW": 6248.6907, "Expected_Power_kW": 6367.3469, "Rotor_Speed_RPM": 13.9028, "Yaw_Error_deg": null, "Gearbox_Oil_Temperature_C": 67.2578, "Vibration_DriveTrain_mm_s": 1.189, "Turbine_Availability_Pct": 100.0, "Curtailment_Flag": 0, "Power_Deviation_Pct": -1.8635, "Underperformance_Flag": 0}, {"Record_ID": "WND-000502811", "Farm_ID": "WF-009", "Region": "Western", "Site_Zone": "D", "Turbine_ID": "WTG-02875", "Turbine_Model": "5MW-C", "Sensor_ID": "SEN-0015026", "Timestamp": "2034-07-24 17:50", "Wind_Speed_m_s": 9.2846, "Wind_Direction_deg": 211.0905, "Turbulence_Intensity": 0.0419, "Air_Temperature_C": 42.5888, "Air_Density_kg_m3": 1.0914, "Actual_Power_kW": 1781.8652, "Expected_Power_kW": 1820.1238, "Rotor_Speed_RPM": 9.0417, "Yaw_Error_deg": 1.0923, "Gearbox_Oil_Temperature_C": 57.1636, "Vibration_DriveTrain_mm_s": 1.3096, "Turbine_Availability_Pct": 97.6065, "Curtailment_Flag": 0, "Power_Deviation_Pct": -2.102, "Underperformance_Flag": 0}, {"Record_ID": "WND-000507771", "Farm_ID": "WF-039", "Region": "Central", "Site_Zone": "A", "Turbine_ID": "WTG-02997", "Turbine_Model": "5MW-C", "Sensor_ID": "SEN-0018210", "Timestamp": "2034-08-28 04:30", "Wind_Speed_m_s": 8.0229, "Wind_Direction_deg": 139.7152, "Turbulence_Intensity": 0.1148, "Air_Temperature_C": 28.5124, "Air_Density_kg_m3": 1.2494, "Actual_Power_kW": 1038.6829, "Expected_Power_kW": 1063.7584, "Rotor_Speed_RPM": 7.1253, "Yaw_Error_deg": -12.951, "Gearbox_Oil_Temperature_C": 57.6394, "Vibration_DriveTrain_mm_s": 2.0259, "Turbine_Availability_Pct": 100.0, "Curtailment_Flag": 0, "Power_Deviation_Pct": -2.3573, "Underperformance_Flag": 0}, {"Record_ID": "WND-000275190", "Farm_ID": "WF-012", "Region": "Northern", "Site_Zone": "D", "Turbine_ID": "WTG-03675", "Turbine_Model": "5MW-C", "Sensor_ID": "SEN-0084108", "Timestamp": "2030-03-27 01:00", "Wind_Speed_m_s": 7.8356, "Wind_Direction_deg": 35.4535, "Turbulence_Intensity": 0.0256, "Air_Temperature_C": 25.9507, "Air_Density_kg_m3": 1.154, "Actual_Power_kW": 880.471, "Expected_Power_kW": 876.6337, "Rotor_Speed_RPM": 6.9485, "Yaw_Error_deg": 2.4061, "Gearbox_Oil_Temperature_C": 47.8505, "Vibration_DriveTrain_mm_s": 1.5464, "Turbine_Availability_Pct": 97.5251, "Curtailment_Flag": 0, "Power_Deviation_Pct": 0.4377, "Underperformance_Flag": 0}, {"Record_ID": "WND-000540743", "Farm_ID": "WF-031", "Region": "Northern", "Site_Zone": "D", "Turbine_ID": "WTG-00130", "Turbine_Model": "5MW-C", "Sensor_ID": "SEN-0138092", "Timestamp": "2035-04-14 03:50", "Wind_Speed_m_s": 8.4257, "Wind_Direction_deg": 131.5397, "Turbulence_Intensity": 0.0255, "Air_Temperature_C": 11.6647, "Air_Density_kg_m3": 1.1192, "Actual_Power_kW": 1154.3332, "Expected_Power_kW": 1201.0018, "Rotor_Speed_RPM": 10.6107, "Yaw_Error_deg": 3.3307, "Gearbox_Oil_Temperature_C": 45.8686, "Vibration_DriveTrain_mm_s": 2.0716, "Turbine_Availability_Pct": 100.0, "Curtailment_Flag": 0, "Power_Deviation_Pct": -3.8858, "Underperformance_Flag": 0}, {"Record_ID": "WND-000001722", "Farm_ID": "WF-027", "Region": "Western", "Site_Zone": "B", "Turbine_ID": "WTG-00313", "Turbine_Model": "4MW-D", "Sensor_ID": "SEN-0308760", "Timestamp": "2025-01-12 23:00", "Wind_Speed_m_s": 12.4571, "Wind_Direction_deg": 103.1087, "Turbulence_Intensity": 0.2477, "Air_Temperature_C": 18.3924, "Air_Density_kg_m3": 1.1277, "Actual_Power_kW": 5279.7072, "Expected_Power_kW": 5523.4159, "Rotor_Speed_RPM": 15.5367, "Yaw_Error_deg": 2.8682, "Gearbox_Oil_Temperature_C": 73.1845, "Vibration_DriveTrain_mm_s": 2.7245, "Turbine_Availability_Pct": 100.0, "Curtailment_Flag": 0, "Power_Deviation_Pct": -4.4123, "Underperformance_Flag": 0}, {"Record_ID": "WND-000404614", "Farm_ID": "WF-016", "Region": "Northern", "Site_Zone": "B", "Turbine_ID": "WTG-04991", "Turbine_Model": "6MW-A", "Sensor_ID": "SEN-0252268", "Timestamp": "2032-09-10 19:40", "Wind_Speed_m_s": 11.4463, "Wind_Direction_deg": 228.813, "Turbulence_Intensity": 0.2791, "Air_Temperature_C": 22.3991, "Air_Density_kg_m3": 1.1556, "Actual_Power_kW": 4451.3027, "Expected_Power_kW": 4678.392, "Rotor_Speed_RPM": 11.8088, "Yaw_Error_deg": -4.2686, "Gearbox_Oil_Temperature_C": 61.0069, "Vibration_DriveTrain_mm_s": 0.7532, "Turbine_Availability_Pct": 97.0038, "Curtailment_Flag": 0, "Power_Deviation_Pct": -4.854, "Underperformance_Flag": 0}, {"Record_ID": "WND-000675063", "Farm_ID": "WF-011", "Region": "Central", "Site_Zone": "C", "Turbine_ID": "WTG-00807", "Turbine_Model": "4MW-D", "Sensor_ID": "SEN-0466649", "Timestamp": "2037-11-01 22:30", "Wind_Speed_m_s": 10.005, "Wind_Direction_deg": 29.4641, "Turbulence_Intensity": 0.0667, "Air_Temperature_C": 44.3105, "Air_Density_kg_m3": 1.1192, "Actual_Power_kW": 2528.8189, "Expected_Power_kW": 2584.6353, "Rotor_Speed_RPM": 12.6273, "Yaw_Error_deg": null, "Gearbox_Oil_Temperature_C": 55.2285, "Vibration_DriveTrain_mm_s": 0.9782, "Turbine_Availability_Pct": 100.0, "Curtailment_Flag": 0, "Power_Deviation_Pct": -2.1595, "Underperformance_Flag": 0}, {"Record_ID": "WND-000757994", "Farm_ID": "WF-036", "Region": "Northern", "Site_Zone": "B", "Turbine_ID": "WTG-02294", "Turbine_Model": "5MW-C", "Sensor_ID": "SEN-0013264", "Timestamp": "2039-05-31 20:20", "Wind_Speed_m_s": 8.6469, "Wind_Direction_deg": 109.8151, "Turbulence_Intensity": 0.0784, "Air_Temperature_C": 28.2879, "Air_Density_kg_m3": 1.107, "Actual_Power_kW": 1176.7443, "Expected_Power_kW": 1339.3078, "Rotor_Speed_RPM": 9.598, "Yaw_Error_deg": 5.3733, "Gearbox_Oil_Temperature_C": null, "Vibration_DriveTrain_mm_s": 1.1896, "Turbine_Availability_Pct": 95.9425, "Curtailment_Flag": 0, "Power_Deviation_Pct": -12.1379, "Underperformance_Flag": 1}, {"Record_ID": "WND-000509019", "Farm_ID": "WF-005", "Region": "Western", "Site_Zone": "E", "Turbine_ID": "WTG-02232", "Turbine_Model": "6MW-A", "Sensor_ID": "SEN-0253028", "Timestamp": "2034-09-05 20:30", "Wind_Speed_m_s": 8.2764, "Wind_Direction_deg": 300.5858, "Turbulence_Intensity": 0.1632, "Air_Temperature_C": 13.0937, "Air_Density_kg_m3": 1.1886, "Actual_Power_kW": 1053.4433, "Expected_Power_kW": 1173.1102, "Rotor_Speed_RPM": 9.0452, "Yaw_Error_deg": 5.4753, "Gearbox_Oil_Temperature_C": 52.9697, "Vibration_DriveTrain_mm_s": null, "Turbine_Availability_Pct": 96.9821, "Curtailment_Flag": 0, "Power_Deviation_Pct": -10.2008, "Underperformance_Flag": 1}, {"Record_ID": "WND-000794591", "Farm_ID": "WF-037", "Region": "Western", "Site_Zone": "A", "Turbine_ID": "WTG-01629", "Turbine_Model": "4MW-D", "Sensor_ID": "SEN-0066502", "Timestamp": "2040-02-09 23:50", "Wind_Speed_m_s": 8.4557, "Wind_Direction_deg": 124.5739, "Turbulence_Intensity": 0.0511, "Air_Temperature_C": 42.7665, "Air_Density_kg_m3": 1.2376, "Actual_Power_kW": 1202.212, "Expected_Power_kW": 1350.2015, "Rotor_Speed_RPM": 9.3896, "Yaw_Error_deg": 6.1546, "Gearbox_Oil_Temperature_C": 44.8117, "Vibration_DriveTrain_mm_s": 0.9439, "Turbine_Availability_Pct": 100.0, "Curtailment_Flag": 0, "Power_Deviation_Pct": -10.9605, "Underperformance_Flag": 1}, {"Record_ID": "WND-000814306", "Farm_ID": "WF-009", "Region": "Western", "Site_Zone": "C", "Turbine_ID": "WTG-01266", "Turbine_Model": "6MW-A", "Sensor_ID": "SEN-0681999", "Timestamp": "2040-06-25 21:40", "Wind_Speed_m_s": 18.7817, "Wind_Direction_deg": 227.5356, "Turbulence_Intensity": 0.1897, "Air_Temperature_C": 21.5669, "Air_Density_kg_m3": 1.1711, "Actual_Power_kW": 5087.6336, "Expected_Power_kW": 5735.8121, "Rotor_Speed_RPM": 21.2378, "Yaw_Error_deg": 7.4226, "Gearbox_Oil_Temperature_C": 62.8146, "Vibration_DriveTrain_mm_s": 1.1563, "Turbine_Availability_Pct": 96.0845, "Curtailment_Flag": 0, "Power_Deviation_Pct": -11.3006, "Underperformance_Flag": 1}, {"Record_ID": "WND-000684756", "Farm_ID": "WF-008", "Region": "Western", "Site_Zone": "E", "Turbine_ID": "WTG-00506", "Turbine_Model": "6MW-B", "Sensor_ID": "SEN-0048252", "Timestamp": "2038-01-08 06:00", "Wind_Speed_m_s": 12.2619, "Wind_Direction_deg": 116.8596, "Turbulence_Intensity": 0.1301, "Air_Temperature_C": 40.6185, "Air_Density_kg_m3": 1.2265, "Actual_Power_kW": 5288.8718, "Expected_Power_kW": 6007.1385, "Rotor_Speed_RPM": 10.578, "Yaw_Error_deg": 5.2606, "Gearbox_Oil_Temperature_C": 71.2006, "Vibration_DriveTrain_mm_s": 2.7991, "Turbine_Availability_Pct": 95.842, "Curtailment_Flag": 0, "Power_Deviation_Pct": -11.9569, "Underperformance_Flag": 1}, {"Record_ID": "WND-000016344", "Farm_ID": "WF-018", "Region": "Northern", "Site_Zone": "C", "Turbine_ID": "WTG-00566", "Turbine_Model": "4MW-D", "Sensor_ID": "SEN-0315191", "Timestamp": "2025-04-24 12:00", "Wind_Speed_m_s": 9.2017, "Wind_Direction_deg": 274.5504, "Turbulence_Intensity": 0.1518, "Air_Temperature_C": 31.788, "Air_Density_kg_m3": 1.1815, "Actual_Power_kW": 1637.5602, "Expected_Power_kW": 1893.4737, "Rotor_Speed_RPM": 10.9966, "Yaw_Error_deg": -3.0114, "Gearbox_Oil_Temperature_C": null, "Vibration_DriveTrain_mm_s": 4.565, "Turbine_Availability_Pct": 97.6669, "Curtailment_Flag": 0, "Power_Deviation_Pct": -13.5156, "Underperformance_Flag": 1}, {"Record_ID": "WND-000112210", "Farm_ID": "WF-015", "Region": "Northern", "Site_Zone": "C", "Turbine_ID": "WTG-04628", "Turbine_Model": "6MW-B", "Sensor_ID": "SEN-0646976", "Timestamp": "2027-02-19 05:40", "Wind_Speed_m_s": 9.1318, "Wind_Direction_deg": 299.2702, "Turbulence_Intensity": 0.2094, "Air_Temperature_C": 29.5285, "Air_Density_kg_m3": 1.2471, "Actual_Power_kW": 1562.8096, "Expected_Power_kW": 1931.7776, "Rotor_Speed_RPM": 12.0196, "Yaw_Error_deg": -2.8443, "Gearbox_Oil_Temperature_C": 59.5718, "Vibration_DriveTrain_mm_s": null, "Turbine_Availability_Pct": 95.642, "Curtailment_Flag": 0, "Power_Deviation_Pct": -19.0999, "Underperformance_Flag": 1}, {"Record_ID": "WND-000930153", "Farm_ID": "WF-008", "Region": "Northern", "Site_Zone": "B", "Turbine_ID": "WTG-00869", "Turbine_Model": "5MW-C", "Sensor_ID": "SEN-0193214", "Timestamp": "2042-09-08 09:30", "Wind_Speed_m_s": 8.4015, "Wind_Direction_deg": 107.8423, "Turbulence_Intensity": 0.0943, "Air_Temperature_C": 24.6549, "Air_Density_kg_m3": 1.2181, "Actual_Power_kW": 1159.0636, "Expected_Power_kW": 1289.7375, "Rotor_Speed_RPM": 5.4654, "Yaw_Error_deg": -8.66, "Gearbox_Oil_Temperature_C": 53.3444, "Vibration_DriveTrain_mm_s": 1.2337, "Turbine_Availability_Pct": 97.1446, "Curtailment_Flag": 0, "Power_Deviation_Pct": -10.1318, "Underperformance_Flag": 1}, {"Record_ID": "WND-000640830", "Farm_ID": "WF-001", "Region": "Western", "Site_Zone": "B", "Turbine_ID": "WTG-03300", "Turbine_Model": "6MW-B", "Sensor_ID": "SEN-0694494", "Timestamp": "2037-03-09 05:00", "Wind_Speed_m_s": 9.976, "Wind_Direction_deg": 185.2622, "Turbulence_Intensity": 0.0841, "Air_Temperature_C": 47.3377, "Air_Density_kg_m3": 1.2061, "Actual_Power_kW": 1262.0575, "Expected_Power_kW": 2750.9696, "Rotor_Speed_RPM": 12.8576, "Yaw_Error_deg": 4.3568, "Gearbox_Oil_Temperature_C": 45.587, "Vibration_DriveTrain_mm_s": null, "Turbine_Availability_Pct": 96.3109, "Curtailment_Flag": 1, "Power_Deviation_Pct": -54.1232, "Underperformance_Flag": 0}, {"Record_ID": "WND-000542153", "Farm_ID": "WF-028", "Region": "Central", "Site_Zone": "B", "Turbine_ID": "WTG-03021", "Turbine_Model": "6MW-A", "Sensor_ID": "SEN-0322047", "Timestamp": "2035-04-23 22:50", "Wind_Speed_m_s": 9.5988, "Wind_Direction_deg": 122.4975, "Turbulence_Intensity": 0.0698, "Air_Temperature_C": 24.5818, "Air_Density_kg_m3": 1.0754, "Actual_Power_kW": 1657.0183, "Expected_Power_kW": 2076.0823, "Rotor_Speed_RPM": 10.9938, "Yaw_Error_deg": 6.4975, "Gearbox_Oil_Temperature_C": 51.5355, "Vibration_DriveTrain_mm_s": 0.7757, "Turbine_Availability_Pct": 100.0, "Curtailment_Flag": 1, "Power_Deviation_Pct": -20.1853, "Underperformance_Flag": 0}, {"Record_ID": "WND-000674750", "Farm_ID": "WF-016", "Region": "Central", "Site_Zone": "E", "Turbine_ID": "WTG-02365", "Turbine_Model": "6MW-A", "Sensor_ID": "SEN-0250740", "Timestamp": "2037-10-30 18:20", "Wind_Speed_m_s": 8.5634, "Wind_Direction_deg": 295.9064, "Turbulence_Intensity": 0.0885, "Air_Temperature_C": 49.5589, "Air_Density_kg_m3": 1.087, "Actual_Power_kW": 438.2867, "Expected_Power_kW": 1257.54, "Rotor_Speed_RPM": 10.5252, "Yaw_Error_deg": -2.5572, "Gearbox_Oil_Temperature_C": 52.1182, "Vibration_DriveTrain_mm_s": 0.4808, "Turbine_Availability_Pct": 90.203, "Curtailment_Flag": 1, "Power_Deviation_Pct": -65.1473, "Underperformance_Flag": 0}, {"Record_ID": "WND-000273592", "Farm_ID": "WF-016", "Region": "Northern", "Site_Zone": "E", "Turbine_ID": "WTG-00180", "Turbine_Model": "6MW-B", "Sensor_ID": "SEN-0031972", "Timestamp": "2030-03-15 22:40", "Wind_Speed_m_s": 7.0307, "Wind_Direction_deg": 203.0267, "Turbulence_Intensity": 0.0671, "Air_Temperature_C": 33.6703, "Air_Density_kg_m3": 1.2233, "Actual_Power_kW": 229.666, "Expected_Power_kW": 538.2372, "Rotor_Speed_RPM": 10.4157, "Yaw_Error_deg": -6.567, "Gearbox_Oil_Temperature_C": 49.9703, "Vibration_DriveTrain_mm_s": 0.5269, "Turbine_Availability_Pct": 100.0, "Curtailment_Flag": 1, "Power_Deviation_Pct": -57.33, "Underperformance_Flag": 0}, {"Record_ID": "WND-000056799", "Farm_ID": "WF-024", "Region": "Central", "Site_Zone": "C", "Turbine_ID": "WTG-03369", "Turbine_Model": "4MW-D", "Sensor_ID": "SEN-0233014", "Timestamp": "2026-01-30 10:30", "Wind_Speed_m_s": 10.6536, "Wind_Direction_deg": 170.3018, "Turbulence_Intensity": 0.1271, "Air_Temperature_C": 22.3448, "Air_Density_kg_m3": 1.1653, "Actual_Power_kW": 3303.9475, "Expected_Power_kW": 3510.1289, "Rotor_Speed_RPM": 12.2319, "Yaw_Error_deg": -0.5264, "Gearbox_Oil_Temperature_C": 53.4131, "Vibration_DriveTrain_mm_s": null, "Turbine_Availability_Pct": 94.906, "Curtailment_Flag": 0, "Power_Deviation_Pct": -5.8739, "Underperformance_Flag": 0}, {"Record_ID": "WND-000200258", "Farm_ID": "WF-006", "Region": "Western", "Site_Zone": "A", "Turbine_ID": "WTG-00793", "Turbine_Model": "4MW-D", "Sensor_ID": "SEN-0116474", "Timestamp": "2028-10-22 16:20", "Wind_Speed_m_s": 11.4072, "Wind_Direction_deg": 264.4078, "Turbulence_Intensity": 0.0808, "Air_Temperature_C": 28.43, "Air_Density_kg_m3": 1.1398, "Actual_Power_kW": 4337.1733, "Expected_Power_kW": 4550.4815, "Rotor_Speed_RPM": 15.1659, "Yaw_Error_deg": -0.4086, "Gearbox_Oil_Temperature_C": 67.5669, "Vibration_DriveTrain_mm_s": null, "Turbine_Availability_Pct": 94.4778, "Curtailment_Flag": 0, "Power_Deviation_Pct": -4.6876, "Underperformance_Flag": 0}]; const PROFILE={"rows": 1000000, "farms": 40, "turbines": 5000, "underperf": 16.0691, "curtail": 5.4869, "miss_vib": 9.9945, "miss_temp": 9.9831, "miss_yaw": 3.5132999999999996};
+let language='en', phase=0, timer=null, elapsed=0, samples=[], workOrder=false, repaired=false, analyticStage=0, analyticTimer=null, analyticsAt=null;
+const anchor = DATA.find(x=>x.Underperformance_Flag===0 && x.Curtailment_Flag===0 && x.Turbine_Availability_Pct>=95) || DATA[0];
+const faultAnchor = DATA.find(x=>x.Underperformance_Flag===1 && x.Curtailment_Flag===0 && x.Turbine_Availability_Pct>=95) || DATA[1];
+
+const TXT={
+ en:{
+ title:'Industrial Facility Management · Wind SCADA Closed-Loop Lab',
+ sub:'A guided live story: SCADA → analytics → diagnosis → EAM/CMMS → intervention → verification',
+ story:'The story you tell the audience',
+ storytext:'We begin with a healthy turbine. SCADA streams operating values. Then we introduce a performance-loss condition. Analytics asks whether the observation is eligible, compares Actual vs Expected, investigates evidence without assuming root cause, creates a condition-based work order, and verifies recovery after intervention.',
+ start:'▶ Start SCADA', fault:'⚠ Introduce Underperformance', analytics:'Run Analytics', wo:'Create Work Order', repair:'Perform Intervention', reset:'↻ Reset Demo',
+ chart:'X-axis = elapsed demo time. Y-axis = power (kW). Dashed = expected healthy power. Blue = actual SCADA power. Shaded area = residual. Vertical markers identify deviation, intervention and verified recovery.',
+ decision:'Operational decision', gate:'Eligibility gate', quality:'Data quality', eligible:'Eligible for technical diagnosis?', diag:'Current interpretation',
+ evidence:'Evidence & cause-neutral diagnosis', hyp:'Hypothesis', ev:'Evidence', assess:'Assessment', explain:'Explain Current Evidence',
+ eam:'condition-based action', asset:'Asset', wonum:'Work order', priority:'Priority', status:'Status', scope:'Inspection / action scope',
+ teaching:'Masterclass teaching point', teachingtext:'SCADA tells us what the turbine is doing. The expected-power model tells us what it should be doing under comparable conditions. Analytics quantifies the gap and organizes evidence. EAM/CMMS converts the decision into accountable work. Human intervention changes the physical asset; SCADA then verifies whether performance recovered.',
+ ready:'Ready. Start SCADA to establish normal behavior.', normal:'Healthy baseline established. Actual power is tracking expected power.', faulted:'A sustained power gap is developing. Do not diagnose the component yet.', analyzed:'Eligible underperformance detected. The evidence supports investigation, not an automatic component-failure conclusion.', woCreated:'Condition-based inspection work order created and linked to the turbine/event.', repairing:'Intervention performed. Watch actual power move back toward expected.', recovered:'Recovery verified: actual power is again close to expected.',
+ dataok:'Key condition signals available', yes:'YES', no:'NO'
+ },
+ es:{
+ title:'Facility Management Industrial · Laboratorio SCADA de Ciclo Cerrado',
+ sub:'Historia guiada en vivo: SCADA → analítica → diagnóstico → EAM/CMMS → intervención → verificación',
+ story:'La historia que contará a la audiencia',
+ storytext:'Comenzamos con una turbina saludable. SCADA transmite valores operativos. Luego introducimos una condición de pérdida de desempeño. La analítica valida elegibilidad, compara Real vs Esperado, investiga evidencia sin asumir causa raíz, crea una orden basada en condición y verifica la recuperación después de la intervención.',
+ start:'▶ Iniciar SCADA', fault:'⚠ Introducir Bajo Rendimiento', analytics:'Ejecutar Analítica', wo:'Crear Orden de Trabajo', repair:'Realizar Intervención', reset:'↻ Reiniciar Demo',
+ chart:'Eje X = tiempo transcurrido de la demo. Eje Y = potencia (kW). Discontinua = potencia saludable esperada. Azul = potencia real SCADA. Área sombreada = residual. Marcadores verticales muestran desviación, intervención y recuperación.',
+ decision:'Decisión operativa', gate:'Puerta de elegibilidad', quality:'Calidad de datos', eligible:'¿Elegible para diagnóstico técnico?', diag:'Interpretación actual',
+ evidence:'Evidencia y diagnóstico neutral respecto a causa', hyp:'Hipótesis', ev:'Evidencia', assess:'Evaluación', explain:'Explicar Evidencia Actual',
+ eam:'acción basada en condición', asset:'Activo', wonum:'Orden de trabajo', priority:'Prioridad', status:'Estado', scope:'Alcance de inspección / acción',
+ teaching:'Punto didáctico de la masterclass', teachingtext:'SCADA nos dice qué está haciendo la turbina. El modelo de potencia esperada nos dice qué debería estar haciendo bajo condiciones comparables. La analítica cuantifica la brecha y organiza evidencia. EAM/CMMS convierte la decisión en trabajo responsable. La intervención humana cambia el activo físico; SCADA verifica después si el desempeño se recuperó.',
+ ready:'Listo. Inicie SCADA para establecer comportamiento normal.', normal:'Línea base saludable establecida. La potencia real sigue de cerca a la esperada.', faulted:'Se está desarrollando una brecha sostenida de potencia. Todavía no diagnostique el componente.', analyzed:'Bajo rendimiento elegible detectado. La evidencia justifica investigar, no concluir automáticamente una falla de componente.', woCreated:'Orden de inspección basada en condición creada y vinculada a la turbina/evento.', repairing:'Intervención realizada. Observe cómo la potencia real vuelve hacia la esperada.', recovered:'Recuperación verificada: la potencia real vuelve a estar cerca de la esperada.',
+ dataok:'Señales clave de condición disponibles', yes:'SÍ', no:'NO'
+ },
+ pt:{
+ title:'Facility Management Industrial · Laboratório SCADA de Ciclo Fechado',
+ sub:'História guiada ao vivo: SCADA → analytics → diagnóstico → EAM/CMMS → intervenção → verificação',
+ story:'A história que você contará ao público',
+ storytext:'Começamos com uma turbina saudável. O SCADA transmite valores operacionais. Depois introduzimos uma condição de perda de desempenho. O analytics valida elegibilidade, compara Real vs Esperado, investiga evidências sem presumir causa raiz, cria uma ordem baseada em condição e verifica a recuperação após a intervenção.',
+ start:'▶ Iniciar SCADA', fault:'⚠ Introduzir Subdesempenho', analytics:'Executar Analytics', wo:'Criar Ordem de Serviço', repair:'Realizar Intervenção', reset:'↻ Reiniciar Demo',
+ chart:'Eixo X = tempo decorrido da demo. Eixo Y = potência (kW). Tracejado = potência saudável esperada. Azul = potência real SCADA. Área sombreada = residual. Marcadores verticais mostram desvio, intervenção e recuperação.',
+ decision:'Decisão operacional', gate:'Gate de elegibilidade', quality:'Qualidade dos dados', eligible:'Elegível para diagnóstico técnico?', diag:'Interpretação atual',
+ evidence:'Evidências e diagnóstico neutro quanto à causa', hyp:'Hipótese', ev:'Evidência', assess:'Avaliação', explain:'Explicar Evidência Atual',
+ eam:'ação baseada em condição', asset:'Ativo', wonum:'Ordem de serviço', priority:'Prioridade', status:'Status', scope:'Escopo de inspeção / ação',
+ teaching:'Ponto didático da masterclass', teachingtext:'SCADA nos diz o que a turbina está fazendo. O modelo de potência esperada nos diz o que ela deveria estar fazendo sob condições comparáveis. O analytics quantifica a lacuna e organiza evidências. EAM/CMMS transforma a decisão em trabalho responsável. A intervenção humana altera o ativo físico; o SCADA verifica depois se o desempenho se recuperou.',
+ ready:'Pronto. Inicie o SCADA para estabelecer comportamento normal.', normal:'Linha de base saudável estabelecida. A potência real acompanha de perto a esperada.', faulted:'Uma lacuna sustentada de potência está surgindo. Ainda não diagnostique o componente.', analyzed:'Subdesempenho elegível detectado. A evidência justifica investigação, não uma conclusão automática de falha de componente.', woCreated:'Ordem de inspeção baseada em condição criada e vinculada à turbina/evento.', repairing:'Intervenção realizada. Observe a potência real retornar em direção à esperada.', recovered:'Recuperação verificada: a potência real voltou a ficar próxima da esperada.',
+ dataok:'Sinais-chave de condição disponíveis', yes:'SIM', no:'NÃO'
+ }};
+function $(id){return document.getElementById(id)} function t(k){return TXT[language][k]}
+function setLang(l){language=l;['en','es','pt'].forEach(x=>$(x).classList.toggle('on',x===l));
+ const map={title:'title',subtitle:'sub',storyTitle:'story',storyText:'storytext',bStart:'start',bFault:'fault',bAnalytics:'analytics',bWO:'wo',bRepair:'repair',bReset:'reset',chartNote:'chart',decisionTitle:'decision',gateTitle:'gate',qualityLabel:'quality',eligibleLabel:'eligible',diagTitle:'diag',evidenceTitle:'evidence',hypothesisHead:'hyp',evidenceHead:'ev',assessmentHead:'assess',bExplain:'explain',eamTitle:'eam',woAssetLabel:'asset',woNumberLabel:'wonum',woPriorityLabel:'priority',woStatusLabel:'status',woScopeLabel:'scope',teachingTitle:'teaching',teachingText:'teachingtext'};
+ Object.entries(map).forEach(([id,k])=>$(id).textContent=t(k));
+ if($('clStart'))$('clStart').textContent=l==='en'?'SCADA start':l==='es'?'Inicio SCADA':'Início SCADA';
+ if($('clDev'))$('clDev').textContent=l==='en'?'Deviation begins':l==='es'?'Inicio desviación':'Início do desvio';
+ if($('clAnalytics'))$('clAnalytics').textContent=l==='en'?'Analytics':l==='es'?'Analítica':'Analytics';
+ if($('clIntervention'))$('clIntervention').textContent=l==='en'?'Intervention':l==='es'?'Intervención':'Intervenção';
+ if($('clRecovery'))$('clRecovery').textContent=l==='en'?'Recovery verified':l==='es'?'Recuperación verificada':'Recuperação verificada';
+ if($('devMetricLabel'))$('devMetricLabel').textContent=l==='en'?'Current deviation:':l==='es'?'Desviación actual:':'Desvio atual:';
+ if($('sinceMetricLabel'))$('sinceMetricLabel').textContent=l==='en'?'Time since deviation:':l==='es'?'Tiempo desde desviación:':'Tempo desde o desvio:';
+ if($('clockExplain'))$('clockExplain').textContent=l==='en'?'Demo clock: accelerated classroom seconds ≠ production 10-minute SCADA interval':l==='es'?'Reloj demo: segundos acelerados de clase ≠ intervalo SCADA productivo de 10 minutos':'Relógio demo: segundos acelerados de aula ≠ intervalo SCADA produtivo de 10 minutos';
+ render();}
+function fmt(v,d=1){return Number(v).toLocaleString(undefined,{minimumFractionDigits:d,maximumFractionDigits:d})}
+function expectedAt(sec){let base=Math.max(1200, Number(anchor.Expected_Power_kW)); return base*(1+0.025*Math.sin(sec/8));}
+function pointFor(sec){
+ let exp=expectedAt(sec), ratio=0.99+0.008*Math.sin(sec/3), yaw=2.0+0.5*Math.sin(sec/5), vib=1.4+0.12*Math.sin(sec/4), temp=58+1.2*Math.sin(sec/7);
+ if(phase>=2 && sec>=faultStart){let q=Math.min(1,(sec-faultStart)/12);ratio=0.99-(0.16*q);yaw=2+10*q;vib=1.4+1.2*q;temp=58+3*q;}
+ if(phase>=5 && sec>=repairStart){let q=Math.min(1,(sec-repairStart)/14);ratio=0.83+0.155*q;yaw=12-9*q;vib=2.6-1.0*q;temp=61-2*q;}
+ return {sec,expected:exp,actual:exp*ratio,wind:Number(anchor.Wind_Speed_m_s)+0.25*Math.sin(sec/6),yaw,vib,temp,avail:Math.max(96.5,Number(anchor.Turbine_Availability_Pct)),curt:0};
+}
+let faultStart=9999,repairStart=9999,recoveryStart=9999;
+function stopTimer(){if(timer){clearInterval(timer);timer=null}}
+function addSample(){elapsed++;samples.push(pointFor(elapsed));if(samples.length>75)samples.shift()}
+function startScada(){
+ stopTimer(); phase=1; elapsed=0; faultStart=9999; repairStart=9999; recoveryStart=9999; workOrder=false; repaired=false; samples=[];
+ for(let k=0;k<14;k++){samples.push(pointFor(elapsed));elapsed++}
+ render(); flash('status');
+ timer=setInterval(()=>{addSample();render()},650);
+}
+function introduceFault(){
+ stopTimer();
+ if(samples.length===0){phase=1;elapsed=0;for(let k=0;k<12;k++){samples.push(pointFor(elapsed));elapsed++}}
+ phase=2; faultStart=elapsed;
+ let steps=0;
+ timer=setInterval(()=>{addSample();steps++;render();if(steps>=14){stopTimer();render();flash('status')}},180);
+ render();
+}
+function stopAnalyticsTimer(){if(analyticTimer){clearInterval(analyticTimer);analyticTimer=null}}
+
+function mmss(sec){if(sec===null||sec===undefined||sec>=9999)return '—';sec=Math.max(0,Math.round(sec));return String(Math.floor(sec/60)).padStart(2,'0')+':'+String(sec%60).padStart(2,'0')}
+function renderEventClock(){
+ let p=samples.length?samples[samples.length-1]:pointFor(0),dev=(p.actual-p.expected)/p.expected*100;
+ if($('clockStart'))$('clockStart').textContent='00:00';
+ if($('clockDev'))$('clockDev').textContent=mmss(faultStart);
+ if($('clockAnalytics'))$('clockAnalytics').textContent=mmss(analyticsAt);
+ if($('clockIntervention'))$('clockIntervention').textContent=mmss(repairStart);
+ if($('clockRecovery'))$('clockRecovery').textContent=mmss(recoveryStart);
+ if($('devMetric'))$('devMetric').textContent=(dev>=0?'+':'')+fmt(dev,1)+'%';
+ if($('sinceMetric'))$('sinceMetric').textContent=faultStart<9999?mmss(elapsed-faultStart):'—';
+}
+function showHelp(kind){
+ let p=samples.length?samples[samples.length-1]:pointFor(0),res=p.actual-p.expected,dev=res/p.expected*100;
+ const en={
+ abt:['Analytical Base Table (ABT)',`<div class="call"><b>One analytical row = one turbine × one 10-minute SCADA timestamp.</b> The ABT joins operational telemetry with asset/context data before modeling.</div>
+ <table class="abt-mini"><tr><th>Domain</th><th>Examples from the project schema</th><th>Analytical use</th></tr>
+ <tr><td>Asset identity</td><td>Record_ID, Turbine_ID, Farm_ID</td><td>Keys / indexing — normally not predictors</td></tr>
+ <tr><td>Asset metadata</td><td>Turbine_Model, Lat, Long, Hub_Height</td><td>OEM / spatial context</td></tr>
+ <tr><td>Meteorological</td><td>Wind_Speed_m_s, Wind_Direction_deg</td><td>Core expected-power inputs</td></tr>
+ <tr><td>Atmospheric</td><td>Ambient_Temp_C, Air_Density_kgm3</td><td>Density / seasonal correction</td></tr>
+ <tr><td>Aerodynamic</td><td>Nacelle_Pos_deg, Yaw_Offset_deg</td><td>Alignment / diagnostic evidence</td></tr>
+ <tr><td>Control telemetry</td><td>Pitch_Angle_deg, Rotor_RPM, Gen_RPM</td><td>Operating/control behavior</td></tr>
+ <tr><td>Thermal health</td><td>Gearbox_Temp_C, Gen_Temp_C</td><td>Condition / anomaly evidence</td></tr>
+ <tr><td>Operational state</td><td>Availability_Flag, Curtailment_Flag</td><td>Eligibility/filtering</td></tr>
+ <tr><td>Targets</td><td>Expected_Power_kW, Deficit/Underperformance_Flag</td><td>Regression output + binary decision target</td></tr></table>`],
+ reg:['Regression — Expected Power',`<div class="call">The project architecture proposes <b>XGBoost / LightGBM regression</b> to estimate a continuous target: <b>Expected_Power_kW</b>.</div>
+ <div class="mathbox">X = [wind speed, air density, ambient temperature, wind direction, operating/control features, ...]
+ŷ = f(X)
+ŷ = Expected_Power_kW ≈ ${fmt(p.expected,0)} kW</div>
+ <div class="small"><b>Important:</b> this browser does not train XGBoost live. It visualizes the expected-power output defined by the project architecture/dataset.</div>`],
+ res:['Residual — Actual vs Expected',`<div class="call">The residual quantifies the performance gap. Negative means actual generation is below expected generation.</div>
+ <div class="mathbox">Residual = Actual − Expected
+= ${fmt(p.actual,0)} − ${fmt(p.expected,0)}
+= ${fmt(res,0)} kW
+
+Deviation % = (Actual − Expected) / Expected × 100
+= ${fmt(dev,1)}%</div>`],
+ rule:['Eligibility / Underperformance Rule',`<div class="call">A power gap is not automatically a maintenance problem. The project applies operating-state gates before treating it as technical underperformance.</div>
+ <div class="mathbox">IF deviation ≤ −10%
+AND turbine is available
+AND curtailment = FALSE
+AND operating conditions are eligible
+THEN Underperformance_Flag = 1</div>
+ <div class="small">Current demo: deviation ${fmt(dev,1)}% · availability ${fmt(p.avail,1)}% · curtailment 0.</div>`],
+ diag:['Diagnostic Evidence',`<div class="call">After the event is eligible, condition variables help investigate <b>why</b>. The project architecture proposes SHAP attribution and unsupervised anomaly detection.</div>
+ <div class="mathbox">Current evidence
+Yaw error: ${fmt(p.yaw,1)}°
+Drivetrain vibration: ${fmt(p.vib,2)} mm/s
+Gearbox oil temperature: ${fmt(p.temp,1)}°C</div>
+ <div class="small">The demo shows a <b>SHAP-style teaching view</b>, not genuine live SHAP values. Evidence supports hypotheses; it does not by itself prove root cause.</div>`],
+ action:['Prescriptive Action → EAM / CMMS',`<div class="call">Analytics becomes operational only when it produces accountable work.</div>
+ <div class="mathbox">Evidence → Recommendation → Work Order
+Validate sensors
+→ inspect yaw/control alignment
+→ inspect drivetrain condition
+→ document findings
+→ intervene if justified
+→ verify recovery in SCADA</div>
+ <div class="small">The CMMS/EAM preserves the asset, event, priority, assignment, action, status and maintenance history.</div>`]
+ };
+ const esTitles={abt:'Tabla Base Analítica (ABT)',reg:'Regresión — Potencia Esperada',res:'Residual — Real vs Esperado',rule:'Regla de Elegibilidad',diag:'Evidencia Diagnóstica',action:'Acción Prescriptiva → EAM / CMMS'};
+ const ptTitles={abt:'Tabela Base Analítica (ABT)',reg:'Regressão — Potência Esperada',res:'Residual — Real vs Esperado',rule:'Regra de Elegibilidade',diag:'Evidência Diagnóstica',action:'Ação Prescritiva → EAM / CMMS'};
+ let item=en[kind];$('mTitle').textContent=language==='en'?item[0]:(language==='es'?esTitles[kind]:ptTitles[kind]);
+ $('mSub').textContent=language==='en'?'Click-through explanation for the masterclass':language==='es'?'Explicación interactiva para la masterclass':'Explicação interativa para a masterclass';
+ $('mBody').innerHTML=item[1];$('modal').classList.add('show');
+}
+function renderPipeline(){const ids=['pABT','pReg','pResidual','pRule','pDiag','pAction'];ids.forEach((id,i)=>{let e=$(id);if(!e)return;e.classList.remove('active','done');if(i+1<analyticStage)e.classList.add('done');else if(i+1===analyticStage)e.classList.add('active')});let p=samples.length?samples[samples.length-1]:pointFor(0),res=p.actual-p.expected,dev=res/p.expected*100;if($('pABTOut'))$('pABTOut').textContent=`${anchor.Turbine_ID} × 10-min SCADA · wind ${fmt(p.wind,2)} m/s`;if($('pRegOut'))$('pRegOut').textContent=analyticStage>=2?`Expected = ${fmt(p.expected,0)} kW · XGBoost/LightGBM architecture`:'XGBoost / LightGBM → Expected Power';if($('pResidualOut'))$('pResidualOut').textContent=analyticStage>=3?`${fmt(p.actual,0)} − ${fmt(p.expected,0)} = ${fmt(res,0)} kW (${fmt(dev,1)}%)`:'Actual − Expected';if($('pRuleOut'))$('pRuleOut').textContent=analyticStage>=4?`${Math.abs(dev)>10?'PASS':'NO FLAG'} · availability ${fmt(p.avail,1)}% · curtailment 0`:'>10% gap + available + not curtailed';if($('pDiagOut'))$('pDiagOut').textContent=analyticStage>=5?`Yaw ${fmt(p.yaw,1)}° · vibration ${fmt(p.vib,2)} · gearbox ${fmt(p.temp,1)}°C`:'SHAP-style evidence view*';if($('pActionOut'))$('pActionOut').textContent=analyticStage>=6?(language==='en'?'Inspect yaw/control + drivetrain → CMMS':language==='es'?'Inspeccionar yaw/control + drivetrain → CMMS':'Inspecionar yaw/controle + drivetrain → CMMS'):'EAM / CMMS recommendation';}
+function animateAnalytics(){stopAnalyticsTimer();analyticStage=1;renderPipeline();analyticTimer=setInterval(()=>{analyticStage++;renderPipeline();if(analyticStage>=6){stopAnalyticsTimer();phase=3;render();flash('evidenceSummary')}},650);}
+function runAnalytics(){stopTimer();stopAnalyticsTimer();if(phase<2){if(samples.length===0){phase=1;elapsed=0;for(let k=0;k<12;k++){samples.push(pointFor(elapsed));elapsed++}}phase=2;faultStart=elapsed;for(let k=0;k<14;k++)addSample();}phase=2;analyticStage=0;render();animateAnalytics();}
+function createWO(){
+ stopTimer();
+ if(phase<3){stopAnalyticsTimer();analyticStage=6;phase=3;renderPipeline();}
+ phase=4;workOrder=true;render();flash('eamCard');
+ $('eamCard').classList.add('wo-card-live');
+ $('woBanner').classList.add('show');
+ $('woDetail').style.display='block';
+ document.getElementById('eamCard').scrollIntoView({behavior:'smooth',block:'center'});
+}
+function intervene(){
+ stopTimer();
+ if(phase<4){if(phase<3)runAnalytics();phase=4;workOrder=true}
+ phase=5;repaired=true;repairStart=elapsed;render();if($('eamCard'))$('eamCard').classList.add('wo-card-live');
+ let steps=0;
+ timer=setInterval(()=>{
+   addSample();steps++;render();
+   if(steps>=16){
+     stopTimer();phase=6;recoveryStart=elapsed;addSample();render();flash('status');
+   }
+ },180);
+}
+function resetDemo(){stopTimer();stopAnalyticsTimer();phase=0;analyticStage=0;analyticsAt=null;elapsed=0;samples=[];workOrder=false;repaired=false;faultStart=9999;repairStart=9999;recoveryStart=9999;
+ if($('eamCard'))$('eamCard').classList.remove('wo-card-live');if($('woBanner'))$('woBanner').classList.remove('show');if($('woDetail'))$('woDetail').style.display='none';
+ render();window.scrollTo({top:0,behavior:'smooth'})}
+function flash(id){let e=$(id);if(!e)return;let old=e.style.outline;e.style.outline='3px solid #38bdf8';setTimeout(()=>e.style.outline=old,900)}
+function buttonState(){
+ const order=['bStart','bFault','bAnalytics','bWO','bRepair'];
+ order.forEach(id=>{let b=$(id);b.disabled=false;b.classList.remove('step-active','step-done','step-next');});
+ let completed=phase===0?0:phase===1?1:phase===2?2:phase===3?3:phase===4?4:5;
+ order.forEach((id,idx)=>{
+   let b=$(id);
+   if(idx<completed)b.classList.add('step-done');
+   else if(idx===completed && phase<5)b.classList.add('step-next');
+   else if(idx>completed){b.disabled=true;}
+ });
+ if(phase===1)$('bStart').classList.add('step-active');
+ if(phase===2)$('bFault').classList.add('step-active');
+ if(phase===3)$('bAnalytics').classList.add('step-active');
+ if(phase===4)$('bWO').classList.add('step-active');
+ if(phase===5)$('bRepair').classList.add('step-active');
+ if(phase>=6)order.forEach(id=>{$(id).classList.remove('step-active','step-next');$(id).classList.add('step-done');});
+}
+function render(){
+ let p=samples.length?samples[samples.length-1]:pointFor(0),dev=(p.actual-p.expected)/p.expected*100;
+ $('assetTitle').textContent=`${anchor.Turbine_ID} · ${anchor.Turbine_Model} · LIVE SCADA`;
+ $('identity').textContent=`Dataset anchor: ${anchor.Record_ID} · ${anchor.Farm_ID} / ${anchor.Region} / Zone ${anchor.Site_Zone} · Sensor ${anchor.Sensor_ID}`;
+ $('wind').textContent=fmt(p.wind,2);$('expected').textContent=fmt(p.expected,0);$('actual').textContent=fmt(p.actual,0);$('deviation').textContent=(dev>=0?'+':'')+fmt(dev,1)+'%';$('yaw').textContent=fmt(p.yaw,1)+'°';$('vibration').textContent=fmt(p.vib,2);$('gearbox').textContent=fmt(p.temp,1)+'°C';$('availability').textContent=fmt(p.avail,1)+'%';
+ $('gateAvail').textContent=fmt(p.avail,1)+'%';$('quality').textContent=t('dataok');$('eligible').textContent=t('yes');
+ let st=$('status'),text=t('ready'),cls='status ok';
+ if(phase===1){st.textContent='NORMAL';text=t('normal')}
+ if(phase===2){st.textContent=language==='en'?'DEVIATION':language==='es'?'DESVIACIÓN':'DESVIO';text=t('faulted');cls='status warn'}
+ if(phase===3){st.textContent=language==='en'?'UNDERPERFORMING':language==='es'?'BAJO RENDIMIENTO':'SUBDESEMPENHO';text=t('analyzed');cls='status bad'}
+ if(phase===4){st.textContent=language==='en'?'WORK ORDER OPEN':language==='es'?'OT ABIERTA':'OS ABERTA';text=t('woCreated');cls='status warn'}
+ if(phase===5){st.textContent=language==='en'?'INTERVENTION':language==='es'?'INTERVENCIÓN':'INTERVENÇÃO';text=t('repairing');cls='status warn'}
+ if(phase===6){st.textContent=language==='en'?'RECOVERED':language==='es'?'RECUPERADO':'RECUPERADO';text=t('recovered');cls='status ok'}
+ if(phase===0)st.textContent='READY'; st.className=cls;$('statusText').textContent=text;
+ $('diagnosis').textContent=phase<2?(language==='en'?'No anomaly requiring diagnosis.':language==='es'?'Sin anomalía que requiera diagnóstico.':'Sem anomalia que exija diagnóstico.'):
+ phase===2?(language==='en'?'Performance gap observed. Run analytics before assigning a cause.':language==='es'?'Brecha de desempeño observada. Ejecute analítica antes de asignar una causa.':'Lacuna de desempenho observada. Execute analytics antes de atribuir uma causa.'):
+ (language==='en'?'Potentially controllable underperformance. Yaw/control and drivetrain condition are inspection hypotheses; gearbox overheating is not strongly supported.':language==='es'?'Bajo rendimiento potencialmente controlable. Yaw/control y condición del drivetrain son hipótesis de inspección; sobrecalentamiento del gearbox no está fuertemente respaldado.':'Subdesempenho potencialmente controlável. Yaw/controle e condição do drivetrain são hipóteses de inspeção; superaquecimento do gearbox não é fortemente sustentado.');
+ $('evidenceSummary').textContent=phase<3?(language==='en'?'Run Analytics after the deviation develops to convert telemetry into evidence.':language==='es'?'Ejecute Analítica después de que aparezca la desviación para convertir telemetría en evidencia.':'Execute Analytics após o desvio surgir para converter telemetria em evidência.'):
+ `${language==='en'?'Residual':'Residual'}: ${fmt(p.actual-p.expected,0)} kW · ${language==='en'?'Deviation':'Deviation'}: ${fmt(dev,1)}% · Curtailment: 0 · Availability: ${fmt(p.avail,1)}%`;
+ $('yawEvidence').textContent=fmt(p.yaw,1)+'°';$('vibEvidence').textContent=fmt(p.vib,2)+' mm/s';$('tempEvidence').textContent=fmt(p.temp,1)+'°C';$('extEvidence').textContent='Curtailment 0 · Availability '+fmt(p.avail,1)+'%';
+ $('yawAssessment').textContent=phase>=3?(language==='en'?'Investigate':'Investigar'):'—';$('vibAssessment').textContent=phase>=3?(language==='en'?'Investigate trend':'Investigar tendencia'):'—';$('tempAssessment').textContent=phase>=3?(language==='en'?'Not strongly indicated':'No fuertemente indicado'):'—';$('extAssessment').textContent=phase>=3?(language==='en'?'External constraint not indicated':'Restricción externa no indicada'):'—';
+ $('woAsset').textContent=anchor.Turbine_ID;$('woNumber').textContent=workOrder?'WO-'+anchor.Record_ID.replace('WND-',''):'—';$('woPriority').textContent=workOrder?(language==='en'?'Condition-based / High':'Basada en condición / Alta'):'—';$('woStatus').textContent=phase>=6?'VERIFIED / CLOSE':phase>=5?'WORK IN PROGRESS':workOrder?'OPEN':'—';$('woScope').textContent=workOrder?(language==='en'?'Validate sensors → inspect yaw/control alignment → inspect drivetrain condition → document findings → verify post-work performance':language==='es'?'Validar sensores → inspeccionar alineación yaw/control → inspeccionar condición drivetrain → documentar hallazgos → verificar desempeño posterior':'Validar sensores → inspecionar alinhamento yaw/controle → inspecionar condição drivetrain → documentar achados → verificar desempenho pós-serviço'):'—';
+ $('woNote').textContent=language==='en'?'The EAM record preserves the operational evidence and makes the maintenance response accountable.':language==='es'?'El registro EAM conserva la evidencia operativa y hace responsable la respuesta de mantenimiento.':'O registro EAM preserva a evidência operacional e torna a resposta de manutenção rastreável.';
+ if(workOrder){
+   $('woBanner').textContent=language==='en'?'✓ WORK ORDER CREATED':language==='es'?'✓ ORDEN DE TRABAJO CREADA':'✓ ORDEM DE SERVIÇO CRIADA';
+   $('woDetail').style.display='block';$('eamCard').classList.add('wo-card-live');
+   $('woSource').textContent=`SCADA / Analytics · ${anchor.Turbine_ID}`;
+   $('woTrigger').textContent=`Actual ${fmt(p.actual,0)} kW vs Expected ${fmt(p.expected,0)} kW · ${fmt(dev,1)}%`;
+   $('woAssigned').textContent=language==='en'?'Wind O&M Technician / Controls Specialist':language==='es'?'Técnico O&M Eólico / Especialista de Control':'Técnico O&M Eólico / Especialista de Controle';
+   $('woDue').textContent=language==='en'?'Inspect within 24 h; escalate if deviation persists':'Inspeccionar en 24 h; escalar si persiste la desviación';
+   $('woAction').textContent=language==='en'?'Validate sensors; inspect yaw/control alignment and drivetrain; document findings; verify post-work power.':language==='es'?'Validar sensores; inspeccionar yaw/control y drivetrain; documentar hallazgos; verificar potencia posterior.':'Validar sensores; inspecionar yaw/controle e drivetrain; documentar achados; verificar potência após o serviço.';
+ } else {
+   if($('woDetail'))$('woDetail').style.display='none';if($('woBanner'))$('woBanner').classList.remove('show');if($('eamCard'))$('eamCard').classList.remove('wo-card-live');
+ }
+ document.querySelectorAll('#flow .node').forEach((n,idx)=>{n.style.borderColor=(idx+1)<=Math.max(1,phase)?'#38bdf8':'#315a79';n.style.background=(idx+1)===phase?'#0b4b70':'#0b253b'});
+ buttonState(); renderPipeline(); renderEventClock(); draw();
+}
+function draw(){
+ let c=$('chart'),ctx=c.getContext('2d'),W=c.width,H=c.height;ctx.clearRect(0,0,W,H);
+ let d=samples.length?samples:[pointFor(0)],pad={l:70,r:22,t:38,b:58},pw=W-pad.l-pad.r,ph=H-pad.t-pad.b;
+ let vals=d.flatMap(p=>[p.expected,p.actual]),ymin=Math.max(0,Math.min(...vals)*0.72),ymax=Math.max(...vals)*1.12;
+ let X=s=>pad.l+((s-d[0].sec)/Math.max(1,d[d.length-1].sec-d[0].sec))*pw,Y=v=>pad.t+(1-(v-ymin)/(ymax-ymin))*ph;
+ ctx.font='12px Segoe UI';for(let j=0;j<=5;j++){let y=pad.t+j*ph/5,val=ymax-(ymax-ymin)*j/5;ctx.strokeStyle='#24415f';ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(W-pad.r,y);ctx.stroke();ctx.fillStyle='#9fb5c8';ctx.textAlign='right';ctx.fillText(Math.round(val),pad.l-9,y+4)}
+ // residual shading
+ if(d.length>1){ctx.beginPath();d.forEach((p,j)=>j?ctx.lineTo(X(p.sec),Y(p.expected)):ctx.moveTo(X(p.sec),Y(p.expected)));for(let j=d.length-1;j>=0;j--)ctx.lineTo(X(d[j].sec),Y(d[j].actual));ctx.closePath();ctx.fillStyle='rgba(56,189,248,.10)';ctx.fill()}
+ // expected
+ ctx.strokeStyle='#a9bfd2';ctx.lineWidth=2;ctx.setLineDash([7,6]);ctx.beginPath();d.forEach((p,j)=>j?ctx.lineTo(X(p.sec),Y(p.expected)):ctx.moveTo(X(p.sec),Y(p.expected)));ctx.stroke();
+ // actual
+ ctx.strokeStyle='#38bdf8';ctx.lineWidth=3;ctx.setLineDash([]);ctx.beginPath();d.forEach((p,j)=>j?ctx.lineTo(X(p.sec),Y(p.actual)):ctx.moveTo(X(p.sec),Y(p.actual)));ctx.stroke();
+ function marker(sec,label,color){if(sec<d[0].sec||sec>d[d.length-1].sec)return;let x=X(sec);ctx.strokeStyle=color;ctx.lineWidth=2;ctx.setLineDash([4,4]);ctx.beginPath();ctx.moveTo(x,pad.t);ctx.lineTo(x,H-pad.b);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle=color;ctx.textAlign='left';ctx.fillText(label,Math.min(x+6,W-190),pad.t+14)}
+ if(faultStart<9999)marker(faultStart,language==='en'?'DEVIATION BEGINS':language==='es'?'INICIA DESVIACIÓN':'INÍCIO DO DESVIO','#f59e0b');
+ if(repairStart<9999)marker(repairStart,language==='en'?'INTERVENTION':language==='es'?'INTERVENCIÓN':'INTERVENÇÃO','#fb7185');
+ if(recoveryStart<9999)marker(recoveryStart,language==='en'?'RECOVERY VERIFIED':language==='es'?'RECUPERACIÓN VERIFICADA':'RECUPERAÇÃO VERIFICADA','#34d399');
+ ctx.fillStyle='#9fb5c8';ctx.textAlign='center';ctx.fillText(language==='en'?'Accelerated demo time (s)':language==='es'?'Tiempo acelerado de demo (s)':'Tempo acelerado da demo (s)',pad.l+pw/2,H-14);
+ ctx.save();ctx.translate(18,pad.t+ph/2);ctx.rotate(-Math.PI/2);ctx.fillText('Power (kW)',0,0);ctx.restore();
+ ctx.fillStyle='#a9bfd2';ctx.textAlign='left';ctx.fillText(language==='en'?'Dashed = Expected':'Discontinua = Esperado',pad.l,pad.t-18);ctx.fillStyle='#38bdf8';ctx.fillText(language==='en'?'Blue = Actual SCADA':'Azul = Real SCADA',pad.l+155,pad.t-18);
+}
+function explainEvidence(){
+ let p=samples.length?samples[samples.length-1]:pointFor(0),dev=(p.actual-p.expected)/p.expected*100;
+ $('mTitle').textContent=language==='en'?'Current Evidence → Operational Recommendation':language==='es'?'Evidencia Actual → Recomendación Operativa':'Evidência Atual → Recomendação Operacional';
+ $('mSub').textContent=anchor.Turbine_ID+' · '+fmt(dev,1)+'%';
+ let body=language==='en'
+ ? `<div class="call"><b>What is happening?</b><br>Actual output is ${fmt(Math.abs(dev),1)}% ${dev<0?'below':'above'} the expected-power baseline. Curtailment is not active and availability remains high, so the observation is eligible for technical investigation.</div><div class="cols" style="margin-top:12px"><div class="box"><b>Evidence interpretation</b><br>Yaw error and drivetrain vibration increased while the power residual widened. Gearbox oil temperature did not show a comparable overheating signal. This pattern supports inspecting yaw/control alignment and drivetrain condition, but it does not prove a specific component failure.</div><div class="box"><b>Recommended action</b><br>Validate sensor quality first. Then inspect yaw/control alignment and drivetrain condition. Record findings in EAM/CMMS. Do not replace a component solely from the analytics signal.</div></div>`
+ : language==='es'
+ ? `<div class="call"><b>¿Qué está ocurriendo?</b><br>La producción real está ${fmt(Math.abs(dev),1)}% por debajo de la línea base de potencia esperada. No hay curtailment y la disponibilidad sigue alta, por lo que la observación es elegible para investigación técnica.</div><div class="cols" style="margin-top:12px"><div class="box"><b>Interpretación</b><br>El error yaw y la vibración del drivetrain aumentaron mientras creció el residual de potencia. La temperatura del aceite del gearbox no mostró una señal comparable de sobrecalentamiento. Esto apoya inspeccionar yaw/control y drivetrain, pero no prueba una falla específica.</div><div class="box"><b>Acción recomendada</b><br>Validar primero la calidad de sensores. Luego inspeccionar yaw/control y condición del drivetrain. Registrar hallazgos en EAM/CMMS. No reemplazar un componente solo por la señal analítica.</div></div>`
+ : `<div class="call"><b>O que está acontecendo?</b><br>A produção real está ${fmt(Math.abs(dev),1)}% abaixo da linha de base de potência esperada. Não há curtailment e a disponibilidade permanece alta, portanto a observação é elegível para investigação técnica.</div><div class="cols" style="margin-top:12px"><div class="box"><b>Interpretação</b><br>O erro de yaw e a vibração do drivetrain aumentaram enquanto o residual de potência cresceu. A temperatura do óleo do gearbox não mostrou sinal comparável de superaquecimento. Isso sustenta inspeção de yaw/controle e drivetrain, mas não prova uma falha específica.</div><div class="box"><b>Ação recomendada</b><br>Validar primeiro a qualidade dos sensores. Depois inspecionar yaw/controle e condição do drivetrain. Registrar achados no EAM/CMMS. Não substituir componente apenas pelo sinal analítico.</div></div>`;
+ $('mBody').innerHTML=body;$('modal').classList.add('show');
+}
+setLang('en'); resetDemo();
+</script></body></html>
